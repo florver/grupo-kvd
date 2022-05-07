@@ -24,15 +24,15 @@ engine = psycopg2.connect(
 cursor = engine.cursor()
 cursor.execute("""CREATE TABLE IF NOT EXISTS base_TopCTR (advertiser_id INT PRIMARY KEY, fecha_act DATE, click INT, impression INT, rate DECIMAL);""")
 
-#with open('/TopCTR_final.csv', 'r') as f:
-#    reader = csv.reader(f)
-#    next(reader) 
-#    for row in reader:
-#        cursor.execute(
-#        "INSERT INTO base_TopCTR VALUES (%s, %s, %s, %s, %s)",
-#        row
-#    )
-#engine.commit()
+with open('/TopCTR_final.csv', 'r') as f:
+    reader = csv.reader(f)
+    next(reader) 
+    for row in reader:
+        cursor.execute(
+        "INSERT INTO base_TopCTR VALUES (%s, %s, %s, %s, %s)",
+        row
+    )
+engine.commit()
 
 cursor.execute("""select * from base_TopCTR LIMIT 5""")
 rows=cursor.fetchall()
