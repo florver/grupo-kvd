@@ -22,7 +22,7 @@ engine = psycopg2.connect(
 
 #### Tabla TOPCTR ####
 cursor = engine.cursor()
-cursor.execute("""CREATE TABLE IF NOT EXISTS base_TopCTR (advertiser_id INT PRIMARY KEY, fecha_act, click, impression, rate );""")
+cursor.execute("""CREATE TABLE IF NOT EXISTS base_TopCTR (advertiser_id INT PRIMARY KEY, fecha_act DATE, click INT, impression INT, rate DECIMAL);""")
 
 #with open('/TopCTR_final.csv', 'r') as f:
 #    reader = csv.reader(f)
