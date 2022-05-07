@@ -13,7 +13,7 @@ import psycopg2
 import csv
 
 engine = psycopg2.connect(
-    database="grupo-kvd",
+    database='postgres',
     user='postgres',
     password='riverplate1995',
     host="grupo-kvd.c7ezedheahhk.us-east-1.rds.amazonaws.com",
