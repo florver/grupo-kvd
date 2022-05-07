@@ -34,7 +34,7 @@ cursor.execute("""CREATE TABLE IF NOT EXISTS base_TopCTR (advertiser_id INT PRIM
 #    )
 #engine.commit()
 
-cursor.execute("""select top 5 * from base_TopCTR""")
+cursor.execute("""select * from base_TopCTR LIMIT 5""")
 rows=cursor.fetchall()
 for row in rows:
   print(row)
