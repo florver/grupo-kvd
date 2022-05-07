@@ -28,7 +28,7 @@ cursor.execute("""CREATE TABLE IF NOT EXISTS base_TopCTR (advertiser_id INT PRIM
                                                           impression, 
                                                           rate );""")
 
-with open('/Users/matiasbergman/airflow/dags/TopCTR_final.csv', 'r') as f:
+with open('/TopCTR_final.csv', 'r') as f:
     reader = csv.reader(f)
     next(reader) 
     for row in reader:
