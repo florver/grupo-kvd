@@ -23,7 +23,7 @@ engine = psycopg2.connect(
 
 #### Tabla TOPCTR ####
 cursor = engine.cursor()
-cursor.execute("""CREATE TABLE IF NOT EXISTS base_TopCTR (advertiser_id INT PRIMARY KEY,product_id VARCHAR, fecha_act DATE, click INT, impression INT, rate DECIMAL);""")
+cursor.execute("""CREATE TABLE IF NOT EXISTS base_TopCTR_Final (advertiser_id VARCHAR PRIMARY KEY,product_id VARCHAR, fecha_act DATE, click INT, impression INT, rate DECIMAL);""")
 
 #url= 'https://github.com/florver/grupo-kvd/blob/8626cb3f62d5ec77610b25a394b6a4f2340f1909/TopCTR_final.csv'
 
@@ -32,7 +32,7 @@ df = pd.read_csv(url, index_col = 0, header = None)
 
 for i in range(0 ,len(df)):
     values = (df['advertiser_id'][i],df['product_id'][i] , df['date'][i], df['click'][i], df['impression'][i], df['rate'][i])
-    cursor.execute("INSERT INTO base_TopCTR (advertiser_id,product_id, fecha_act, click, impression, rate) VALUES (%s, %s, %s, %s, %s, %s)",
+    cursor.execute("INSERT INTO base_TopCTR_Final (advertiser_id,product_id, fecha_act, click, impression, rate) VALUES (%s, %s, %s, %s, %s, %s)",
                 values)
 
 engine.commit()
@@ -44,7 +44,7 @@ engine.commit()
 ##next(reader) 
 ##for row in reader:
 ##  cursor.execute(
-##  "INSERT INTO base_TopCTR VALUES (%int, %s, %s, %s, %s)",
+##  "INSERT INTO base_TopCTR_Final VALUES (%s, %s, %s, %s, %s, %s)",
 ##  row
 ##  )
 ##engine.commit()
@@ -59,7 +59,7 @@ engine.commit()
 #    )
 #engine.commit()
 
-cursor.execute("""select * from base_TopCTR LIMIT 5""")
+cursor.execute("""select * from base_TopCTR_Final LIMIT 5""")
 rows=cursor.fetchall()
 for row in rows:
   print(row)
