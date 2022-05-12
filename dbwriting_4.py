@@ -30,14 +30,13 @@ cursor.execute("""CREATE TABLE IF NOT EXISTS base_TopCTR (advertiser_id INT PRIM
 url='/home/ubuntu/grupo-kvd/TopCTR_final.csv'
 df = pd.read_csv(url, index_col = 0, header = None)
 
-cur = conn.cursor()
-
 for i in range(0 ,len(df)):
     values = (df['advertiser_id'][i],df['product_id'][i] , df['date'][i], df['click'][i], df['impression'][i], df['rate'][i])
-    cur.execute("INSERT INTO base_TopCTR (advertiser_id,product_id, fecha_act, click, impression, rate) VALUES (%s, %s, %s, %s, %s, %s)",
+    cursor.execute("INSERT INTO base_TopCTR (advertiser_id,product_id, fecha_act, click, impression, rate) VALUES (%s, %s, %s, %s, %s, %s)",
                 values)
 
-conn.commit()
+engine.commit()
+
 #print("Records created successfully")
 #conn.close()
 
