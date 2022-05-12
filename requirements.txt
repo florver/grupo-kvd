@@ -1,0 +1,11 @@
+export AIRFLOW_HOME=~/airflow
+AIRFLOW_VERSION=2.2.4
+PYTHON_VERSION="$(python --version | cut -d " " -f 2 | cut -d "." -f 1-2)"
+
+airflow db init
+
+airflow users create -u admin -f Ad -l Min -r Admin -e ad@min.com
+
+airflow webserver --port 8080
+
+airflow scheduler
