@@ -27,7 +27,7 @@ cursor.execute("""CREATE TABLE IF NOT EXISTS base_TopCTR (advertiser_id INT PRIM
 
 #url= 'https://github.com/florver/grupo-kvd/blob/8626cb3f62d5ec77610b25a394b6a4f2340f1909/TopCTR_final.csv'
 
-url='home/ubuntu/grupo-kvd/TopCTR_final.csv'
+url='/home/ubuntu/grupo-kvd/TopCTR_final.csv'
 df = pd.read_csv(url, index_col = 0, header = None)
 
 cur = conn.cursor()
