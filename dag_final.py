@@ -65,38 +65,38 @@ def TopCTR(df_ads_view):
 from operator import concat
 def DBWriting(TopCTR_final,TopProduct_final):
     engine = psycopg2.connect(
-      database="postgres",
-      user='postgres',
-      password='riverplate1995',
-      host="grupo-kvd.c7ezedheahhk.us-east-1.rds.amazonaws.com",
-      port='5432'
-  )
+        database="postgres",
+        user='postgres',
+        password='riverplate1995',
+        host="grupo-kvd.c7ezedheahhk.us-east-1.rds.amazonaws.com",
+        port='5432'
+    )
     
       #### Tabla TOPCTR ####
-      cursor = engine.cursor()
-      cursor.execute("""CREATE TABLE IF NOT EXISTS base_TopCTR_Final (advertiser_id VARCHAR,product_id VARCHAR, fecha_act DATE, click INT, impression INT, rate DECIMAL);""")
+    cursor = engine.cursor()
+    cursor.execute("""CREATE TABLE IF NOT EXISTS base_TopCTR_Final (advertiser_id VARCHAR,product_id VARCHAR, fecha_act DATE, click INT, impression INT, rate DECIMAL);""")
 
-      for i in range(0 ,len(TopCTR_final)):
-          values = (TopCTR_final['advertiser_id'][i],TopCTR_final['product_id'][i] , TopCTR_final['date'][i], TopCTR_final['click'][i], TopCTR_final['impression'][i], TopCTR_final['rate'][i])
-          cursor.execute("INSERT INTO base_TopCTR (advertiser_id,product_id, fecha_act, click, impression, rate) VALUES (%s, %s, %s, %s, %s, %s)",
+    for i in range(0 ,len(TopCTR_final)):
+        values = (TopCTR_final['advertiser_id'][i],TopCTR_final['product_id'][i] , TopCTR_final['date'][i], TopCTR_final['click'][i], TopCTR_final['impression'][i], TopCTR_final['rate'][i])
+        cursor.execute("INSERT INTO base_TopCTR (advertiser_id,product_id, fecha_act, click, impression, rate) VALUES (%s, %s, %s, %s, %s, %s)",
                       values)
 
-      engine.commit()
+    engine.commit()
 
 
       #### Tabla TOPProduct ####
-      cursor = engine.cursor()
-      cursor.execute("""CREATE TABLE IF NOT EXISTS base_TopProduct_Final (advertiser_id VARCHAR, fecha_act DATE, product_id VARCHAR, count INT);""")
+    cursor = engine.cursor()
+    cursor.execute("""CREATE TABLE IF NOT EXISTS base_TopProduct_Final (advertiser_id VARCHAR, fecha_act DATE, product_id VARCHAR, count INT);""")
 
-      for i in range(0 ,len(TopProduct_final)):
-          values = (TopProduct_final['advertiser_id'][i], TopProduct_final['date'][i], TopProduct_final['product_id'][i],TopProduct_final['count'][i]  )
-          cursor.execute("INSERT INTO base_TopProduct_Final (advertiser_id, fecha_act, product_id, count) VALUES (%s, %s, %s, %s)",
+    for i in range(0 ,len(TopProduct_final)):
+        values = (TopProduct_final['advertiser_id'][i], TopProduct_final['date'][i], TopProduct_final['product_id'][i],TopProduct_final['count'][i]  )
+        cursor.execute("INSERT INTO base_TopProduct_Final (advertiser_id, fecha_act, product_id, count) VALUES (%s, %s, %s, %s)",
                       values)
 
-      engine.commit()
+    engine.commit()
 
 with DAG(
-    dag_id='Pipeline_TP_final',
+    dag_id='Dag_final',
     schedule_interval='@Daily',
     start_date=datetime.datetime(2022, 4, 1),
     catchup=False,
