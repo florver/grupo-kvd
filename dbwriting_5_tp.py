@@ -26,7 +26,7 @@ cursor = engine.cursor()
 cursor.execute("""CREATE TABLE IF NOT EXISTS base_TopProduct_Final (advertiser_id VARCHAR, fecha_act DATE, product_id VARCHAR, count INT);""")
 
 url='/home/ubuntu/grupo-kvd/TopProduct_final.csv'
-df = pd.read_csv(url, index_col = 0, header = None)
+df = pd.read_csv(url)
 
 for i in range(0 ,len(df)):
     values = (df['advertiser_id'][i] , df['date'][i],df['product_id'][i], df['count'][i])
