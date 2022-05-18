@@ -9,6 +9,7 @@ Original file is located at
 
 #pip install psycopg2-binary
 
+import numpy as np
 import psycopg2
 import csv
 import pandas as pd
