@@ -35,7 +35,7 @@ cols=[]
 for elt in cursor.description:
   cols.append(elt[0])
 
-df_ctr = pd.Dataframe(data=data_TopCTR, colums=cols)
+df_ctr = pd.DataFrame(data=data_TopCTR, colums=cols)
 
 #### Tabla TOPProduct ####
 cursor = engine.cursor()
@@ -46,7 +46,7 @@ cols=[]
 for elt in cursor.description:
   cols.append(elt[0])
 
-df_tp = pd.Dataframe(data=data_TopProduct, colums=cols)
+df_tp = pd.DataFrame(data=data_TopProduct, colums=cols)
 
 app = FastAPI()
 
