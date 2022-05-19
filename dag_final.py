@@ -58,7 +58,7 @@ def FiltrarDatos():
   s3.Bucket("data-recomendaciones").upload_file(Filename="product_views_activos.csv",Key="product_views_activos.csv")
 
 def TopProduct ():
-  prod_views_activos = s3.get_object(Bucket="data-recomendaciones", Key="product_views_activos.csv")
+  prod_views_activos = s3.Bucket('data-recomendaciones').Object('product_views_activos.csv').get()
   TopProduct_final=product_views_activos.groupby(["advertiser_id","date",'product_id'], as_index=False).count()
   TopProduct_final.columns = [ 'advertiser_id', 'date', 'product_id','count']
   TopProduct_final=TopProduct_final.sort_values(by = ["advertiser_id",'count'], ascending = False)
