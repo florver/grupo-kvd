@@ -119,10 +119,10 @@ with DAG(
     python_callable=FiltrarDatos
     )
 
-     TopProduct = PythonOperator(
-     task_id='TopProduct',
-     python_callable=TopProduct()
-     )
+    TopProduct = PythonOperator(
+    task_id='TopProduct',
+    python_callable=TopProduct()
+    )
 
 #     TopCTR = PythonOperator(
 #     task_id='TopCTR',
