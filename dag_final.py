@@ -53,7 +53,7 @@ def FiltrarDatos():
   #Listado de views de advertisers activos
   ads_views_today = ads_views[ads_views['date'] == hoy]
   ads_views_activos = pd.merge(ads_views_today, adv_ids, on = 'advertiser_id', how = 'inner')
-  return(ads_views_activos)
+  
 
   #Log de vistas de productos en la página del cliente
   product_views_today = product_views[product_views['date'] == hoy]
