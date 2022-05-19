@@ -23,31 +23,22 @@ import psycopg2
 import csv
 import boto3
 
-s3 = boto3.client(
+s3 = boto3.resource(
     service_name="s3",
     aws_access_key_id = "AKIA4PFNY54U34VBUBRF",
     aws_secret_access_key = "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"
     )
-bucket_name= "data-recomendaciones"
-s3_object1="advertiser_ids.csv"
-s3_object2="ads_views.csv"
-s3_object3="product_views.csv"
 
-url1= s3.get_object(Bucket=bucket_name, Key=s3_object1)
-url2= s3.get_object(Bucket=bucket_name, Key=s3_object2)
-url3= s3.get_object(Bucket=bucket_name, Key=s3_object3)
+url1= s3.Bucket('data-recomendaciones').Object('advertiser_ids.csv').get()
+url2= s3.Bucket('data-recomendaciones').Object('ads_views.csv').get()
+url3= s3.Bucket('data-recomendaciones').Object('product_views.csv').get()
 
-s3_upload = boto3.resource(
-            service_name="s3",
-            aws_access_key_id = "AKIA4PFNY54U34VBUBRF",
-            aws_secret_access_key = "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"
-            )
 
 def FiltrarDatos():
   hoy = date.today().strftime('%Y-%m-%d')
 
   #url1='/home/ubuntu/grupo-kvd/advertiser_ids.csv'
-  adv_ids = pd.read_csv(url1['Body'])
+  adv_ids = pd.read_csv(url1['Body'], index_col=0)
   
   #url2='/home/ubuntu/grupo-kvd/ads_views.csv'
   ads_views = pd.read_csv(url2['Body'])
@@ -64,8 +55,7 @@ def FiltrarDatos():
   product_views_today = product_views[product_views['date'] == hoy]
   product_views_activos = pd.merge(product_views_today, adv_ids, on = 'advertiser_id', how = 'inner')
   product_views_activos.to_csv("product_views_activos.csv")
-  s3_upload.Bucket("data-recomendaciones").upload_file(Filename="product_views_activos.csv",Key="product_views_activos.csv")
-  
+  s3.Bucket("data-recomendaciones").upload_file(Filename="product_views_activos.csv",Key="product_views_activos.csv")
 
 def TopProduct ():
   prod_views_activos = s3.get_object(Bucket="data-recomendaciones", Key="product_views_activos.csv")
