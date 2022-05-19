@@ -92,7 +92,7 @@ def FiltrarDatos():
 #  for i in range(0 ,len(TopCTR_final)):
 #      values = (TopCTR_final['advertiser_id'][i],TopCTR_final['product_id'][i] , TopCTR_final['date'][i], TopCTR_final['click'][i], TopCTR_final['impression'][i], TopCTR_final['rate'][i])
 #      cursor.execute("INSERT INTO base_TopCTR_Final (advertiser_id,product_id, fecha_act, click, impression, rate) VALUES (%s, %s, %s, %s, %s, %s)",
-                  values)
+#                  values)
 
 #  engine.commit()
 #  #### Tabla TOPProduct ####
