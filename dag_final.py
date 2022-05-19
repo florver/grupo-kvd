@@ -55,56 +55,56 @@ def FiltrarDatos():
   product_views_activos.to_csv("product_views_activos.csv")
   s3.Bucket("data-recomendaciones").upload_file(Filename="product_views_activos.csv",Key="product_views_activos.csv")
 
-def TopProduct ():
-  prod_views_activos = s3.Bucket('data-recomendaciones').Object('product_views_activos.csv').get()
-  TopProduct_final=product_views_activos.groupby(["advertiser_id","date",'product_id'], as_index=False).count()
-  TopProduct_final.columns = [ 'advertiser_id', 'date', 'product_id','count']
-  TopProduct_final=TopProduct_final.sort_values(by = ["advertiser_id",'count'], ascending = False)
-  TopProduct_final=TopProduct_final.groupby(["advertiser_id"]).head(20)
-  TopProduct_final['Model'] = 'TopProduct'
+#def TopProduct ():
+#  prod_views_activos = s3.Bucket('data-recomendaciones').Object('product_views_activos.csv').get()
+#  TopProduct_final=product_views_activos.groupby(["advertiser_id","date",'product_id'], as_index=False).count()
+#  TopProduct_final.columns = [ 'advertiser_id', 'date', 'product_id','count']
+#  TopProduct_final=TopProduct_final.sort_values(by = ["advertiser_id",'count'], ascending = False)
+#  TopProduct_final=TopProduct_final.groupby(["advertiser_id"]).head(20)
+#  TopProduct_final['Model'] = 'TopProduct'
   
 
-def TopCTR(ads_views_activos):
-  #ads_views_activos = pd.read_csv(df_ads_view)
-  ads_views_activos['flag'] = 1
-  ads_views_activos_pivot = pd.pivot_table(ads_views_activos, index=['advertiser_id','product_id', 'date'], columns = ['type'], values = ['flag'], aggfunc = {'flag' : 'sum'}).reset_index()
-  ads_views_activos_pivot['rate'] = ads_views_activos_pivot['flag']['click'].fillna(0)/ads_views_activos_pivot['flag']['impression']
-  TopCTR_final = ads_views_activos_pivot.sort_values(by = 'rate', ascending = False)
-  TopCTR_final.columns = [ 'advertiser_id', 'product_id', 'date', 'click','impression','rate']
-  TopCTR_final = TopCTR_final.groupby(['advertiser_id']).head(20)
-  TopCTR_final['Model'] = 'TopCTR'
+#def TopCTR(ads_views_activos):
+#  #ads_views_activos = pd.read_csv(df_ads_view)
+#  ads_views_activos['flag'] = 1
+#  ads_views_activos_pivot = pd.pivot_table(ads_views_activos, index=['advertiser_id','product_id', 'date'], columns = ['type'], values = ['flag'], aggfunc = {'flag' : 'sum'}).reset_index()
+#  ads_views_activos_pivot['rate'] = ads_views_activos_pivot['flag']['click'].fillna(0)/ads_views_activos_pivot['flag']['impression']
+#  TopCTR_final = ads_views_activos_pivot.sort_values(by = 'rate', ascending = False)
+#  TopCTR_final.columns = [ 'advertiser_id', 'product_id', 'date', 'click','impression','rate']
+#  TopCTR_final = TopCTR_final.groupby(['advertiser_id']).head(20)
+#  TopCTR_final['Model'] = 'TopCTR'
   
 
-from operator import concat
-engine = psycopg2.connect(
-      database="postgres",
-      user='postgres',
-      password='riverplate1995',
-      host="grupo-kvd.c7ezedheahhk.us-east-1.rds.amazonaws.com",
-      port='5432'
-  )
+#from operator import concat
+#engine = psycopg2.connect(
+#      database="postgres",
+#      user='postgres',
+#      password='riverplate1995',
+#      host="grupo-kvd.c7ezedheahhk.us-east-1.rds.amazonaws.com",
+#      port='5432'
+#  )
 
-def DBWriting(TopCTR_final,TopProduct_final):
-  #### Tabla TOPCTR ####
-  cursor = engine.cursor()
-  cursor.execute("""CREATE TABLE IF NOT EXISTS base_TopCTR_Final (advertiser_id VARCHAR,product_id VARCHAR, fecha_act DATE, click INT, impression INT, rate DECIMAL);""")
+#def DBWriting(TopCTR_final,TopProduct_final):
+#  #### Tabla TOPCTR ####
+#  cursor = engine.cursor()
+#  cursor.execute("""CREATE TABLE IF NOT EXISTS base_TopCTR_Final (advertiser_id VARCHAR,product_id VARCHAR, fecha_act DATE, click INT, impression INT, rate DECIMAL);""")
         
-  for i in range(0 ,len(TopCTR_final)):
-      values = (TopCTR_final['advertiser_id'][i],TopCTR_final['product_id'][i] , TopCTR_final['date'][i], TopCTR_final['click'][i], TopCTR_final['impression'][i], TopCTR_final['rate'][i])
-      cursor.execute("INSERT INTO base_TopCTR_Final (advertiser_id,product_id, fecha_act, click, impression, rate) VALUES (%s, %s, %s, %s, %s, %s)",
+#  for i in range(0 ,len(TopCTR_final)):
+#      values = (TopCTR_final['advertiser_id'][i],TopCTR_final['product_id'][i] , TopCTR_final['date'][i], TopCTR_final['click'][i], TopCTR_final['impression'][i], TopCTR_final['rate'][i])
+#      cursor.execute("INSERT INTO base_TopCTR_Final (advertiser_id,product_id, fecha_act, click, impression, rate) VALUES (%s, %s, %s, %s, %s, %s)",
                   values)
 
-  engine.commit()
-  #### Tabla TOPProduct ####
-  cursor = engine.cursor()
-  cursor.execute("""CREATE TABLE IF NOT EXISTS base_TopProduct_Final (advertiser_id VARCHAR, fecha_act DATE, product_id VARCHAR);""")
-        
-  for i in range(0 ,len(TopProduct_final)):
-      values = (TopProduct_final['advertiser_id'][i], TopProduct_final['date'][i], TopProduct_final['product_id'][i]  )
-      cursor.execute("INSERT INTO base_TopProduct_Final (advertiser_id, fecha_act, product_id) VALUES (%s, %s, %s)",
-                  values)
+#  engine.commit()
+#  #### Tabla TOPProduct ####
+#  cursor = engine.cursor()
+#  cursor.execute("""CREATE TABLE IF NOT EXISTS base_TopProduct_Final (advertiser_id VARCHAR, fecha_act DATE, product_id VARCHAR);""")
+#        
+#  for i in range(0 ,len(TopProduct_final)):
+#      values = (TopProduct_final['advertiser_id'][i], TopProduct_final['date'][i], TopProduct_final['product_id'][i]  )
+#      cursor.execute("INSERT INTO base_TopProduct_Final (advertiser_id, fecha_act, product_id) VALUES (%s, %s, %s)",
+#                  values)
 
-  engine.commit()
+#  engine.commit()
 
 with DAG(
     dag_id='Pipeline_TP_final',
@@ -118,23 +118,23 @@ with DAG(
     python_callable=FiltrarDatos
     )
 
-    TopProduct = PythonOperator(
-    task_id='TopProduct',
-    python_callable=TopProduct()
-    )
+#     TopProduct = PythonOperator(
+#     task_id='TopProduct',
+#     python_callable=TopProduct()
+#     )
 
-    TopCTR = PythonOperator(
-    task_id='TopCTR',
-    python_callable=TopCTR()
-    )
+#     TopCTR = PythonOperator(
+#     task_id='TopCTR',
+#     python_callable=TopCTR()
+#     )
 
-    DBWriting = PythonOperator(
-    task_id='DBWriting',
-    python_callable=DBWriting(TopCTR_final,TopProduct_final)
-    )
+#     DBWriting = PythonOperator(
+#     task_id='DBWriting',
+#     python_callable=DBWriting(TopCTR_final,TopProduct_final)
+#     )
 
 ### dependencias
 
-FiltrarDatos >> TopProduct
-FiltrarDatos >> TopCTR
-[TopCTR, TopProduct] >> DBWriting
+#FiltrarDatos >> TopProduct
+#FiltrarDatos >> TopCTR
+#[TopCTR, TopProduct] >> DBWriting
