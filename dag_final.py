@@ -58,9 +58,9 @@ def FiltrarDatos():
   #Log de vistas de productos en la página del cliente
   product_views_today = product_views[product_views['date'] == hoy]
   product_views_activos = pd.merge(product_views_today, adv_ids, on = 'advertiser_id', how = 'inner')
-  product_views_activos.to_csv("s3://data-recomendaciones/product_views_activos.csv",
-          storage_options={'key': 'AKIA4PFNY54U34VBUBRF',
-                           'secret': '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'})
+  product_views_activos.to_csv("product_views_activos.csv")
+  s3.Bucket("data-recomendaciones").upload_file(Filename="product_views_activos.csv",Key="product_views_activos.csv")
+  
 
 def TopProduct ():
   prod_views_activos = s3.get_object(Bucket="data-recomendaciones", Key="product_views_activos.csv")
