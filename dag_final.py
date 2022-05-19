@@ -23,15 +23,20 @@ import psycopg2
 import csv
 import boto3
 
-s3 = boto3.client("s3")
+s3 = boto3.client(
+    service_name="s3",
+    aws_access_key_id = "AKIA4PFNY54U34VBUBRF",
+    aws_secret_access_key = "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"
+    )
 bucket_name= "data-recomendaciones"
-s3_object1="advertiser_ids.cvs"
-s3_object2="ads_views.cvs"
-s3_object3="product_views.cvs"
+s3_object1="advertiser_ids.csv"
+s3_object2="ads_views.csv"
+s3_object3="product_views.csv"
 
 url1= s3.get_object(Bucket=bucket_name, Key=s3_object1)
 url2= s3.get_object(Bucket=bucket_name, Key=s3_object2)
 url3= s3.get_object(Bucket=bucket_name, Key=s3_object3)
+
 
 def FiltrarDatos():
   hoy = date.today().strftime('%Y-%m-%d')
@@ -53,16 +58,16 @@ def FiltrarDatos():
   product_views_today = product_views[product_views['date'] == hoy]
   product_views_activos = pd.merge(product_views_today, adv_ids, on = 'advertiser_id', how = 'inner')
 
-def TopProduct (df_TopProduct):
-  prod_views_activos = pd.read_csv(df_TopProduct)
-  TopProduct_final=prod_views_activos.groupby(["advertiser_id","date",'product_id'], as_index=False).count()
+def TopProduct (product_views_activos):
+  #prod_views_activos = pd.read_csv(df_TopProduct)
+  TopProduct_final=product_views_activos.groupby(["advertiser_id","date",'product_id'], as_index=False).count()
   TopProduct_final.columns = [ 'advertiser_id', 'date', 'product_id','count']
   TopProduct_final=TopProduct_final.sort_values(by = ["advertiser_id",'count'], ascending = False)
   TopProduct_final=TopProduct_final.groupby(["advertiser_id"]).head(20)
   TopProduct_final['Model'] = 'TopProduct'
 
-def TopCTR(df_ads_view):
-  ads_views_activos = pd.read_csv(df_ads_view)
+def TopCTR(ads_views_activos):
+  #ads_views_activos = pd.read_csv(df_ads_view)
   ads_views_activos['flag'] = 1
   ads_views_activos_pivot = pd.pivot_table(ads_views_activos, index=['advertiser_id','product_id', 'date'], columns = ['type'], values = ['flag'], aggfunc = {'flag' : 'sum'}).reset_index()
   ads_views_activos_pivot['rate'] = ads_views_activos_pivot['flag']['click'].fillna(0)/ads_views_activos_pivot['flag']['impression']
