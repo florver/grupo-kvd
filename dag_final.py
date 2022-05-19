@@ -58,8 +58,8 @@ def FiltrarDatos():
 def TopProduct ():
   prod_views_activos = s3.Bucket('data-recomendaciones').Object('product_views_activos.csv').get()
   prod_views_activos_2 = pd.read_csv(prod_views_activos['Body'], index_col=0)
-  TopProduct_final=prod_views_activos_2.groupby(["advertiser_id","date",'product_id'], as_index=False).count()
-  TopProduct_final.columns = [ 'advertiser_id', 'date', 'product_id','count']
+  prod_views_activos_2['count']=1
+  TopProduct_final=prod_views_activos_2.groupby(["advertiser_id","date",'product_id'], as_index=False).sum()
   TopProduct_final=TopProduct_final.sort_values(by = ["advertiser_id",'count'], ascending = False)
   TopProduct_final=TopProduct_final.groupby(["advertiser_id"]).head(20)
   TopProduct_final['Model'] = 'TopProduct'
@@ -121,17 +121,17 @@ with DAG(
 
     TopProduct = PythonOperator(
     task_id='TopProduct',
-    python_callable=TopProduct()
+    python_callable=TopProduct
     )
 
 #     TopCTR = PythonOperator(
 #     task_id='TopCTR',
-#     python_callable=TopCTR()
+#     python_callable=TopCTR
 #     )
 
 #     DBWriting = PythonOperator(
 #     task_id='DBWriting',
-#     python_callable=DBWriting(TopCTR_final,TopProduct_final)
+#     python_callable=DBWriting
 #     )
 
 ### dependencias
