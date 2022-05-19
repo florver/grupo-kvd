@@ -58,11 +58,12 @@ def FiltrarDatos():
   #Log de vistas de productos en la página del cliente
   product_views_today = product_views[product_views['date'] == hoy]
   product_views_activos = pd.merge(product_views_today, adv_ids, on = 'advertiser_id', how = 'inner')
-  return(ads_views_activos)
-  return(product_views_activos)
+  product_views_activos.to_csv("s3://data-recomendaciones/product_views_activos.csv",
+          storage_options={'key': 'AKIA4PFNY54U34VBUBRF',
+                           'secret': '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'})
 
-def TopProduct (product_views_activos):
-  #prod_views_activos = pd.read_csv(df_TopProduct)
+def TopProduct ():
+  prod_views_activos = s3.get_object(Bucket="data-recomendaciones", Key="product_views_activos.csv")
   TopProduct_final=product_views_activos.groupby(["advertiser_id","date",'product_id'], as_index=False).count()
   TopProduct_final.columns = [ 'advertiser_id', 'date', 'product_id','count']
   TopProduct_final=TopProduct_final.sort_values(by = ["advertiser_id",'count'], ascending = False)
@@ -126,7 +127,7 @@ with DAG(
 
     TopProduct = PythonOperator(
     task_id='TopProduct',
-    python_callable=TopProduct(product_views_activos)
+    python_callable=TopProduct()
     )
 
     TopCTR = PythonOperator(
