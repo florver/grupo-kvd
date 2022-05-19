@@ -29,14 +29,13 @@ s3 = boto3.resource(
     aws_secret_access_key = "CU374XCKv4QQR0POTBZaR2ZGkG4rRDTc/TIgO9j+"
     )
 
-url1= s3.Bucket('data-recomendaciones').Object('advertiser_ids.csv').get()
-url2= s3.Bucket('data-recomendaciones').Object('ads_views.csv').get()
-url3= s3.Bucket('data-recomendaciones').Object('product_views.csv').get()
-
 
 def FiltrarDatos():
   hoy = date.today().strftime('%Y-%m-%d')
-
+  url1= s3.Bucket('data-recomendaciones').Object('advertiser_ids.csv').get()
+  url2= s3.Bucket('data-recomendaciones').Object('ads_views.csv').get()
+  url3= s3.Bucket('data-recomendaciones').Object('product_views.csv').get()
+    
   #url1='/home/ubuntu/grupo-kvd/advertiser_ids.csv'
   adv_ids = pd.read_csv(url1['Body'], index_col=0)
   
@@ -49,7 +48,6 @@ def FiltrarDatos():
   #Listado de views de advertisers activos
   ads_views_today = ads_views[ads_views['date'] == hoy]
   ads_views_activos = pd.merge(ads_views_today, adv_ids, on = 'advertiser_id', how = 'inner')
-  
 
   #Log de vistas de productos en la página del cliente
   product_views_today = product_views[product_views['date'] == hoy]
@@ -64,7 +62,7 @@ def TopProduct ():
   TopProduct_final=TopProduct_final.sort_values(by = ["advertiser_id",'count'], ascending = False)
   TopProduct_final=TopProduct_final.groupby(["advertiser_id"]).head(20)
   TopProduct_final['Model'] = 'TopProduct'
-  return(TopProduct_final)
+  
 
 def TopCTR(ads_views_activos):
   #ads_views_activos = pd.read_csv(df_ads_view)
@@ -75,7 +73,7 @@ def TopCTR(ads_views_activos):
   TopCTR_final.columns = [ 'advertiser_id', 'product_id', 'date', 'click','impression','rate']
   TopCTR_final = TopCTR_final.groupby(['advertiser_id']).head(20)
   TopCTR_final['Model'] = 'TopCTR'
-  return(TopCTR_final)
+  
 
 from operator import concat
 engine = psycopg2.connect(
@@ -127,7 +125,7 @@ with DAG(
 
     TopCTR = PythonOperator(
     task_id='TopCTR',
-    python_callable=TopCTR(ads_views_activos)
+    python_callable=TopCTR()
     )
 
     DBWriting = PythonOperator(
