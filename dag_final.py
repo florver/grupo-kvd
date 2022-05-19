@@ -53,10 +53,13 @@ def FiltrarDatos():
   #Listado de views de advertisers activos
   ads_views_today = ads_views[ads_views['date'] == hoy]
   ads_views_activos = pd.merge(ads_views_today, adv_ids, on = 'advertiser_id', how = 'inner')
+  return(ads_views_activos)
 
   #Log de vistas de productos en la página del cliente
   product_views_today = product_views[product_views['date'] == hoy]
   product_views_activos = pd.merge(product_views_today, adv_ids, on = 'advertiser_id', how = 'inner')
+  return(ads_views_activos)
+  return(product_views_activos)
 
 def TopProduct (product_views_activos):
   #prod_views_activos = pd.read_csv(df_TopProduct)
@@ -65,6 +68,7 @@ def TopProduct (product_views_activos):
   TopProduct_final=TopProduct_final.sort_values(by = ["advertiser_id",'count'], ascending = False)
   TopProduct_final=TopProduct_final.groupby(["advertiser_id"]).head(20)
   TopProduct_final['Model'] = 'TopProduct'
+  return(TopProduct_final)
 
 def TopCTR(ads_views_activos):
   #ads_views_activos = pd.read_csv(df_ads_view)
@@ -75,6 +79,7 @@ def TopCTR(ads_views_activos):
   TopCTR_final.columns = [ 'advertiser_id', 'product_id', 'date', 'click','impression','rate']
   TopCTR_final = TopCTR_final.groupby(['advertiser_id']).head(20)
   TopCTR_final['Model'] = 'TopCTR'
+  return(TopCTR_final)
 
 from operator import concat
 engine = psycopg2.connect(
