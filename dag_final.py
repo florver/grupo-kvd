@@ -37,6 +37,11 @@ url1= s3.get_object(Bucket=bucket_name, Key=s3_object1)
 url2= s3.get_object(Bucket=bucket_name, Key=s3_object2)
 url3= s3.get_object(Bucket=bucket_name, Key=s3_object3)
 
+s3_upload = boto3.resource(
+            service_name="s3",
+            aws_access_key_id = "AKIA4PFNY54U34VBUBRF",
+            aws_secret_access_key = "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"
+            )
 
 def FiltrarDatos():
   hoy = date.today().strftime('%Y-%m-%d')
@@ -59,7 +64,7 @@ def FiltrarDatos():
   product_views_today = product_views[product_views['date'] == hoy]
   product_views_activos = pd.merge(product_views_today, adv_ids, on = 'advertiser_id', how = 'inner')
   product_views_activos.to_csv("product_views_activos.csv")
-  s3.Bucket("data-recomendaciones").upload_file(Filename="product_views_activos.csv",Key="product_views_activos.csv")
+  s3_upload.Bucket("data-recomendaciones").upload_file(Filename="product_views_activos.csv",Key="product_views_activos.csv")
   
 
 def TopProduct ():
