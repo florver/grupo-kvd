@@ -27,25 +27,24 @@ engine = psycopg2.connect(
 )
 
 #### Tabla TOPCTR ####
-#cursor = engine.cursor()
-#cursor.execute("""SELECT * FROM base_TopCTR_Final""")
-#data_TopCTR = cursor.fetchall()
+cursor = engine.cursor()
+cursor.execute("""SELECT * FROM base_TopCTR_Final""")
+data_TopCTR = cursor.fetchall()
 
-#cols=[]
-#for elt in cursor.description:
-#  cols.append(elt[0])
-
-#df_ctr = pd.DataFrame(data=data_TopCTR, columns=cols)
+cols=[]
+for elt in cursor.description:
+  cols.append(elt[0])
+df_ctr = pd.DataFrame(data=data_TopCTR, columns=cols)
 
 #### Tabla TOPProduct ####
-#cursor = engine.cursor()
-#cursor.execute("""SELECT * FROM base_TopProduct_Final""")
-#data_TopProduct = cursor.fetchall()
+cursor = engine.cursor()
+cursor.execute("""SELECT * FROM base_TopProduct_Final""")
+data_TopProduct = cursor.fetchall()
 
-#cols=[]
-#for elt in cursor.description:
-#  cols.append(elt[0])
-#df_tp = pd.DataFrame(data=data_TopProduct, columns=cols)
+cols=[]
+for elt in cursor.description:
+  cols.append(elt[0])
+df_tp = pd.DataFrame(data=data_TopProduct, columns=cols)
 
 app = FastAPI()
 
