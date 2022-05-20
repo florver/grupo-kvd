@@ -8,4 +8,4 @@ RUN pip install -r requirements_docker.txt
 
 COPY .app/ /solution/app
 
-CMD ["uvicorn", "FastApi_final:app", "--host", "0.0.0.0", "--port", "80"]
+CMD ["uvicorn", "fastapi_final:app", "--host", "0.0.0.0", "--port", "80"]
