@@ -36,9 +36,9 @@ def FiltrarDatos():
   url2= s3.Bucket('data-recomendaciones').Object('ads_views.csv').get()
   url3= s3.Bucket('data-recomendaciones').Object('product_views.csv').get()
     
-  adv_ids = pd.read_csv(url1['Body'], index_col=0)
-  ads_views = pd.read_csv(url2['Body'], index_col=0)
-  product_views = pd.read_csv(url3['Body'], index_col=0)
+  adv_ids = pd.read_csv(url1['Body'])
+  ads_views = pd.read_csv(url2['Body'])
+  product_views = pd.read_csv(url3['Body'])
 
   #Listado de views de advertisers activos
   ads_views_today = ads_views[ads_views['date'] == hoy]
@@ -54,7 +54,7 @@ def FiltrarDatos():
 
 def TopProduct ():
   prod_views_activos = s3.Bucket('data-recomendaciones').Object('product_views_activos.csv').get()
-  prod_views_activos_2 = pd.read_csv(prod_views_activos['Body'], index_col=0)
+  prod_views_activos_2 = pd.read_csv(prod_views_activos['Body'])
   prod_views_activos_2['count']=1
   TopProduct_final=prod_views_activos_2.groupby(["advertiser_id","date",'product_id'], as_index=False).sum()
   TopProduct_final=TopProduct_final.sort_values(by = ["advertiser_id",'count'], ascending = False)
@@ -65,7 +65,7 @@ def TopProduct ():
   
 def TopCTR ():
   ads_views_activos = s3.Bucket('data-recomendaciones').Object('ads_views_activos.csv').get()
-  ads_views_activos_2 = pd.read_csv(ads_views_activos['Body'], index_col=0)
+  ads_views_activos_2 = pd.read_csv(ads_views_activos['Body'])
   ads_views_activos_2['flag'] = 1
   ads_views_activos_pivot = pd.pivot_table(ads_views_activos_2, index=['advertiser_id','product_id', 'date'], columns = ['type'], values = ['flag'], aggfunc = {'flag' : 'sum'}).reset_index()
   ads_views_activos_pivot['rate'] = ads_views_activos_pivot['flag']['click'].fillna(0)/ads_views_activos_pivot['flag']['impression']
@@ -90,7 +90,7 @@ def TopCTR ():
 
 #  #### Tabla TOPProduct ####
 #  TopProduct = s3.Bucket('data-recomendaciones').Object('TopProduct_final.csv').get()
-#  TopProduct_final = pd.read_csv(TopProduct['Body'], index_col=0)
+#  TopProduct_final = pd.read_csv(TopProduct['Body'])
 #  cursor = engine.cursor()
 #  cursor.execute("""CREATE TABLE IF NOT EXISTS base_TopProduct_Final (advertiser_id VARCHAR, fecha_act DATE, product_id VARCHAR);""")
 #        
