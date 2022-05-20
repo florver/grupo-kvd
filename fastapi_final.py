@@ -16,35 +16,35 @@ import datetime
 from datetime import date
 import json
 
-import psycopg2
+#import psycopg2
 
-engine = psycopg2.connect(
-    database="postgres",
-    user='postgres',
-    password='riverplate1995',
-    host="grupo-kvd.c7ezedheahhk.us-east-1.rds.amazonaws.com",
-    port='5432'
-)
+#engine = psycopg2.connect(
+#    database="postgres",
+#    user='postgres',
+#    password='riverplate1995',
+#    host="grupo-kvd.c7ezedheahhk.us-east-1.rds.amazonaws.com",
+#    port='5432'
+#)
 
 #### Tabla TOPCTR ####
-cursor = engine.cursor()
-cursor.execute("""SELECT * FROM base_TopCTR_Final""")
-data_TopCTR = cursor.fetchall()
+#cursor = engine.cursor()
+#cursor.execute("""SELECT * FROM base_TopCTR_Final""")
+#data_TopCTR = cursor.fetchall()
 
-cols=[]
-for elt in cursor.description:
-  cols.append(elt[0])
-df_ctr = pd.DataFrame(data=data_TopCTR, columns=cols)
+#cols=[]
+#for elt in cursor.description:
+#  cols.append(elt[0])
+#df_ctr = pd.DataFrame(data=data_TopCTR, columns=cols)
 
 #### Tabla TOPProduct ####
-cursor = engine.cursor()
-cursor.execute("""SELECT * FROM base_TopProduct_Final""")
-data_TopProduct = cursor.fetchall()
+#cursor = engine.cursor()
+#cursor.execute("""SELECT * FROM base_TopProduct_Final""")
+#data_TopProduct = cursor.fetchall()
 
-cols=[]
-for elt in cursor.description:
-  cols.append(elt[0])
-df_tp = pd.DataFrame(data=data_TopProduct, columns=cols)
+#cols=[]
+#for elt in cursor.description:
+#  cols.append(elt[0])
+#df_tp = pd.DataFrame(data=data_TopProduct, columns=cols)
 
 app = FastAPI()
 
