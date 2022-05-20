@@ -43,7 +43,6 @@ data_TopProduct = cursor.fetchall()
 cols=[]
 for elt in cursor.description:
   cols.append(elt[0])
-df_tp = pd.DataFrame(data=data_TopProduct, columns=cols)
 
 app = FastAPI()
 
@@ -56,7 +55,7 @@ async def recommendations(adv: str = 'Y0W3K7OV6ZLILW96OO3K', Modelo: str ='TopPr
     
   hoy = date.today().strftime('%Y-%m-%d')
   if Modelo=='TopProduct':
-    
+    df_tp = pd.DataFrame(data=data_TopProduct, columns=cols)
     df_tp=df_tp[(df_tp['date']==hoy)]
     result_prod=df_tp[df_tp['advertiser_id']==adv]['product_id'].to_list()
 
@@ -71,9 +70,9 @@ async def recommendations(adv: str = 'Y0W3K7OV6ZLILW96OO3K', Modelo: str ='TopPr
 async def history(adv: str = 'Y0W3K7OV6ZLILW96OO3K'):
 
   hoy = date.today().strftime('%Y-%m-%d')
-  
   filter=(date.today()-datetime.timedelta(days= 7)).strftime('%Y-%m-%d')
 
+  df_tp = pd.DataFrame(data=data_TopProduct, columns=cols)
   df_tp['Model']='TopProduct'
   df_tp=df_tp[['date','Model','advertiser_id','product_id']]
 
