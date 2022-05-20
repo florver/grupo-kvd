@@ -101,7 +101,7 @@ def DBWriting ():
 
   #### Tabla TOPCTR ####
   TopCTR = s3.Bucket('data-recomendaciones').Object('TopCTR_final.csv').get()
-  TopCTR_final = pd.read_csv(TopCTR['Body'], index_col=0)
+  TopCTR_final = pd.read_csv(TopCTR['Body'])
   cursor = engine.cursor()
   cursor.execute("""CREATE TABLE IF NOT EXISTS base_TopCTR_Final (advertiser_id VARCHAR,product_id VARCHAR, fecha_act DATE, click INT, impression INT, rate DECIMAL);""")
         
