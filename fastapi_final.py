@@ -45,22 +45,17 @@ data_TopProduct = cursor.fetchall()
 cols=[]
 for elt in cursor.description:
   cols.append(elt[0])
-
 df_tp = pd.DataFrame(data=data_TopProduct, columns=cols)
 
 app = FastAPI()
 
 @app.get("/")
 async def root():
-    return {"message": "Welcome to the advs recommendations"}
+    return {"message": "Bienvenidos a la app de recomendaciones"}
 
 @app.get("/recommendations/{adv}/{Modelo}")
 async def recommendations(adv: str = 'Y0W3K7OV6ZLILW96OO3K', Modelo: str ='TopProduct'):
-
-
-  
   hoy = date.today().strftime('%Y-%m-%d')
-
   if Modelo=='TopProduct':
     
     df_tp=df_tp[(df_tp['date']==hoy)]
@@ -98,11 +93,9 @@ async def stats():
 
   hoy = date.today().strftime('%Y-%m-%d')
   filter=(date.today()-datetime.timedelta(days= 7)).strftime('%Y-%m-%d')
-
   
   df_tp['Model']='TopProduct'
   df_tp=df_tp[['date','Model','advertiser_id','product_id']]
-   
   
   df_ctr['Model']='TopCTR'
   df_ctr_sel=df_ctr[['date','Model','advertiser_id','product_id']]
