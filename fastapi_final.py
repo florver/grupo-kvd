@@ -94,23 +94,9 @@ async def stats():
   hoy = date.today()
   filter=(date.today()-datetime.timedelta(days= 7))
   #### Tabla TOPCTR ####
-  cursor = engine.cursor()
-  cursor.execute("""SELECT * FROM base_TopCTR_Final""")
-  data_TopCTR = cursor.fetchall()
-
-  cols_ctr=[]
-  for elt in cursor.description:
-    cols_ctr.append(elt[0])
   df_ctr = pd.DataFrame(data=data_TopCTR, columns=cols_ctr)
 
   #### Tabla TOPProduct ####
-  cursor = engine.cursor()
-  cursor.execute("""SELECT * FROM base_TopProduct_Final""")
-  data_TopProduct = cursor.fetchall()
-
-  cols_tp=[]
-  for elt in cursor.description:
-    cols_tp.append(elt[0])
   df_tp = pd.DataFrame(data=data_TopProduct, columns=cols_tp)
   
   df_tp['Model']='TopProduct'
