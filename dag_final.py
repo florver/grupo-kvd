@@ -77,40 +77,39 @@ def TopCTR ():
   s3.Bucket("data-recomendaciones").upload_file(Filename="TopCTR_final.csv",Key="TopCTR_final.csv")
   
 
-#from operator import concat
-#engine = psycopg2.connect(
-#      database="postgres",
-#      user='postgres',
-#      password='riverplate1995',
-#      host="grupo-kvd.c7ezedheahhk.us-east-1.rds.amazonaws.com",
-#      port='5432'
-#  )
+from operator import concat
+engine = psycopg2.connect(
+      database="postgres",
+      user='postgres',
+      password='riverplate1995',
+      host="grupo-kvd.c7ezedheahhk.us-east-1.rds.amazonaws.com",
+      port='5432'
+  )
 
-#def DBWriting ():
-
-#  #### Tabla TOPProduct ####
-#  TopProduct = s3.Bucket('data-recomendaciones').Object('TopProduct_final.csv').get()
-#  TopProduct_final = pd.read_csv(TopProduct['Body'])
-#  cursor = engine.cursor()
-#  cursor.execute("""CREATE TABLE IF NOT EXISTS base_TopProduct_Final (advertiser_id VARCHAR, fecha_act DATE, product_id VARCHAR);""")
-#        
-#  for i in range(0 ,len(TopProduct_final)):
-#      values = (TopProduct_final['advertiser_id'][i], TopProduct_final['date'][i], TopProduct_final['product_id'][i]  )
-#      cursor.execute("INSERT INTO base_TopProduct_Final (advertiser_id, fecha_act, product_id) VALUES (%s, %s, %s)",
-#                  values)
-#  engine.commit()
-
-#  #### Tabla TOPCTR ####
-#  TopCTR = s3.Bucket('data-recomendaciones').Object('TopCTR_final.csv').get()
-#  TopCTR_final = pd.read_csv(TopCTR['Body'], index_col=0)
-#  cursor = engine.cursor()
-#  cursor.execute("""CREATE TABLE IF NOT EXISTS base_TopCTR_Final (advertiser_id VARCHAR,product_id VARCHAR, fecha_act DATE, click INT, impression INT, rate DECIMAL);""")
+def DBWriting ():
+  #### Tabla TOPProduct ####
+  TopProduct = s3.Bucket('data-recomendaciones').Object('TopProduct_final.csv').get()
+  TopProduct_final = pd.read_csv(TopProduct['Body'])
+  cursor = engine.cursor()
+  cursor.execute("""CREATE TABLE IF NOT EXISTS base_TopProduct_Final (advertiser_id VARCHAR, fecha_act DATE, product_id VARCHAR);""")
         
-#  for i in range(0 ,len(TopCTR_final)):
-#      values = (TopCTR_final['advertiser_id'][i],TopCTR_final['product_id'][i] , TopCTR_final['date'][i], TopCTR_final['click'][i], TopCTR_final['impression'][i], TopCTR_final['rate'][i])
-#      cursor.execute("INSERT INTO base_TopCTR_Final (advertiser_id,product_id, fecha_act, click, impression, rate) VALUES (%s, %s, %s, %s, %s, %s)",
-#                  values)
-#  engine.commit()
+  for i in range(0 ,len(TopProduct_final)):
+      values = (TopProduct_final['advertiser_id'][i], TopProduct_final['date'][i], TopProduct_final['product_id'][i]  )
+      cursor.execute("INSERT INTO base_TopProduct_Final (advertiser_id, fecha_act, product_id) VALUES (%s, %s, %s)",
+                  values)
+  engine.commit()
+
+  #### Tabla TOPCTR ####
+  TopCTR = s3.Bucket('data-recomendaciones').Object('TopCTR_final.csv').get()
+  TopCTR_final = pd.read_csv(TopCTR['Body'], index_col=0)
+  cursor = engine.cursor()
+  cursor.execute("""CREATE TABLE IF NOT EXISTS base_TopCTR_Final (advertiser_id VARCHAR,product_id VARCHAR, fecha_act DATE, click INT, impression INT, rate DECIMAL);""")
+        
+  for i in range(0 ,len(TopCTR_final)):
+      values = (TopCTR_final['advertiser_id'][i],TopCTR_final['product_id'][i] , TopCTR_final['date'][i], TopCTR_final['click'][i], TopCTR_final['impression'][i], TopCTR_final['rate'][i])
+      cursor.execute("INSERT INTO base_TopCTR_Final (advertiser_id,product_id, fecha_act, click, impression, rate) VALUES (%s, %s, %s, %s, %s, %s)",
+                  values)
+  engine.commit()
 
 
 with DAG(
@@ -135,13 +134,13 @@ with DAG(
     python_callable=TopCTR
     )
 
-#     DBWriting = PythonOperator(
-#     task_id='DBWriting',
-#     python_callable=DBWriting
-#     )
+    DBWriting = PythonOperator(
+    task_id='DBWriting',
+    python_callable=DBWriting
+    )
 
 ### dependencias
 
 FiltrarDatos >> TopProduct
 FiltrarDatos >> TopCTR
-#[TopCTR, TopProduct] >> DBWriting
+[TopCTR, TopProduct] >> DBWriting
