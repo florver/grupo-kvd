@@ -56,15 +56,15 @@ async def recommendations(adv: str = 'Y0W3K7OV6ZLILW96OO3K', Modelo: str ='TopPr
   hoy = date.today().strftime('%Y-%m-%d')
   if Modelo=='TopProduct':
     df_tp = pd.DataFrame(data=data_TopProduct, columns=cols)
-    df_tp=df_tp[(df_tp['date']==hoy)]
+    df_tp=df_tp[(df_tp['fecha_act']==hoy)]
     result_prod=df_tp[df_tp['advertiser_id']==adv]['product_id'].to_list()
 
   else:
     df_ctr = pd.DataFrame(data=data_TopCTR, columns=cols)
-    df_ctr=df_ctr[(df_ctr['date']==hoy)]
+    df_ctr=df_ctr[(df_ctr['fecha_act']==hoy)]
     result_prod=df_ctr[df_ctr['advertiser_id']==adv]['product_id'].to_list()
 
-  return {'date': hoy,'advertiser_id': adv, "Modelo":Modelo, "product_id":result_prod}
+  return {'fecha_act': hoy,'advertiser_id': adv, "Modelo":Modelo, "product_id":result_prod}
 
 @app.get("/history/{adv}")
 async def history(adv: str = 'Y0W3K7OV6ZLILW96OO3K'):
@@ -74,19 +74,19 @@ async def history(adv: str = 'Y0W3K7OV6ZLILW96OO3K'):
 
   df_tp = pd.DataFrame(data=data_TopProduct, columns=cols)
   df_tp['Model']='TopProduct'
-  df_tp=df_tp[['date','Model','advertiser_id','product_id']]
+  df_tp=df_tp[['fecha_act','Model','advertiser_id','product_id']]
 
   df_ctr = pd.DataFrame(data=data_TopCTR, columns=cols)
   df_ctr['Model']='TopCTR'
-  df_ctr=df_ctr[['date','Model','advertiser_id','product_id']]
+  df_ctr=df_ctr[['fecha_act','Model','advertiser_id','product_id']]
   df_final=pd.concat([df_tp,df_ctr])
-  base=df_final[(df_final['date']>filter) & (df_final['date']<=hoy)]
+  base=df_final[(df_final['fecha_act']>filter) & (df_final['fecha_act']<=hoy)]
 
   result_prod=base[base['advertiser_id']==adv]['product_id'].to_list()
   result_mod=base[base['advertiser_id']==adv]['Model'].to_list()
-  result_date=base[base['advertiser_id']==adv]['date'].to_list()
+  result_date=base[base['advertiser_id']==adv]['fecha_act'].to_list()
 
-  return {'date': result_date,'advertiser_id': adv, "Modelo":result_mod, "product_id":result_prod}
+  return {'fecha_act': result_date,'advertiser_id': adv, "Modelo":result_mod, "product_id":result_prod}
 
 @app.get("/stats")
 async def stats():
@@ -113,17 +113,17 @@ async def stats():
   df_tp = pd.DataFrame(data=data_TopProduct, columns=cols)
   
   df_tp['Model']='TopProduct'
-  df_tp=df_tp[['date','Model','advertiser_id','product_id']]
+  df_tp=df_tp[['fecha_act','Model','advertiser_id','product_id']]
   
   df_ctr = pd.DataFrame(data=data_TopCTR, columns=cols)
   df_ctr['Model']='TopCTR'
-  df_ctr_sel=df_ctr[['date','Model','advertiser_id','product_id']]
+  df_ctr_sel=df_ctr[['fecha_act','Model','advertiser_id','product_id']]
   df_final=pd.concat([df_tp,df_ctr_sel])
 
-  base=df_final[(df_final['date']>filter) & (df_final['date']<=hoy)]
+  base=df_final[(df_final['fecha_act']>filter) & (df_final['fecha_act']<=hoy)]
 
-  cant=base.groupby(["date"], as_index=True).agg({'advertiser_id':'nunique'}).to_json()
-  cant_product=base[base['date']==hoy].groupby(["date","advertiser_id"], as_index=True).agg({'product_id':'nunique'}).to_json()
+  cant=base.groupby(["fecha_act"], as_index=True).agg({'advertiser_id':'nunique'}).to_json()
+  cant_product=base[base['fecha_act']==hoy].groupby(["fecha_act","advertiser_id"], as_index=True).agg({'product_id':'nunique'}).to_json()
   top_impression=df_ctr.groupby(["advertiser_id"], as_index=True).agg({'impression':'sum'}).to_json()
   top_clicks=df_ctr.groupby(["advertiser_id"], as_index=True).agg({'click':'sum'}).to_json()
 
