@@ -53,7 +53,7 @@ async def root():
 @app.get("/recommendations/{adv}/{Modelo}")
 async def recommendations(adv: str = 'Y0W3K7OV6ZLILW96OO3K', Modelo: str ='TopProduct'):
     
-  hoy = date.today().strftime('%Y-%m-%d')
+  hoy = date.today()
   if Modelo=='TopProduct':
     df_tp = pd.DataFrame(data=data_TopProduct, columns=cols_tp)
     df_tp=df_tp[(df_tp['fecha_act']==hoy)]
@@ -69,8 +69,8 @@ async def recommendations(adv: str = 'Y0W3K7OV6ZLILW96OO3K', Modelo: str ='TopPr
 @app.get("/history/{adv}")
 async def history(adv: str = 'Y0W3K7OV6ZLILW96OO3K'):
 
-  hoy = date.today().strftime('%Y-%m-%d')
-  filter=(date.today()-datetime.timedelta(days= 7)).strftime('%Y-%m-%d')
+  hoy = date.today()
+  filter=(date.today()-datetime.timedelta(days= 7))
 
   df_tp = pd.DataFrame(data=data_TopProduct, columns=cols_tp)
   df_tp['Model']='TopProduct'
@@ -91,8 +91,8 @@ async def history(adv: str = 'Y0W3K7OV6ZLILW96OO3K'):
 @app.get("/stats")
 async def stats():
 
-  hoy = date.today().strftime('%Y-%m-%d')
-  filter=(date.today()-datetime.timedelta(days= 7)).strftime('%Y-%m-%d')
+  hoy = date.today()
+  filter=(date.today()-datetime.timedelta(days= 7))
   #### Tabla TOPCTR ####
   cursor = engine.cursor()
   cursor.execute("""SELECT * FROM base_TopCTR_Final""")
