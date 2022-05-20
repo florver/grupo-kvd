@@ -34,7 +34,6 @@ data_TopCTR = cursor.fetchall()
 cols=[]
 for elt in cursor.description:
   cols.append(elt[0])
-df_ctr = pd.DataFrame(data=data_TopCTR, columns=cols)
 
 #### Tabla TOPProduct ####
 cursor = engine.cursor()
@@ -54,6 +53,7 @@ async def root():
 
 @app.get("/recommendations/{adv}/{Modelo}")
 async def recommendations(adv: str = 'Y0W3K7OV6ZLILW96OO3K', Modelo: str ='TopProduct'):
+    
   hoy = date.today().strftime('%Y-%m-%d')
   if Modelo=='TopProduct':
     
@@ -61,7 +61,7 @@ async def recommendations(adv: str = 'Y0W3K7OV6ZLILW96OO3K', Modelo: str ='TopPr
     result_prod=df_tp[df_tp['advertiser_id']==adv]['product_id'].to_list()
 
   else:
-    
+    df_ctr = pd.DataFrame(data=data_TopCTR, columns=cols)
     df_ctr=df_ctr[(df_ctr['date']==hoy)]
     result_prod=df_ctr[df_ctr['advertiser_id']==adv]['product_id'].to_list()
 
@@ -71,11 +71,13 @@ async def recommendations(adv: str = 'Y0W3K7OV6ZLILW96OO3K', Modelo: str ='TopPr
 async def history(adv: str = 'Y0W3K7OV6ZLILW96OO3K'):
 
   hoy = date.today().strftime('%Y-%m-%d')
+  
   filter=(date.today()-datetime.timedelta(days= 7)).strftime('%Y-%m-%d')
 
   df_tp['Model']='TopProduct'
   df_tp=df_tp[['date','Model','advertiser_id','product_id']]
-   
+
+  df_ctr = pd.DataFrame(data=data_TopCTR, columns=cols)
   df_ctr['Model']='TopCTR'
   df_ctr=df_ctr[['date','Model','advertiser_id','product_id']]
   df_final=pd.concat([df_tp,df_ctr])
@@ -92,10 +94,29 @@ async def stats():
 
   hoy = date.today().strftime('%Y-%m-%d')
   filter=(date.today()-datetime.timedelta(days= 7)).strftime('%Y-%m-%d')
+  #### Tabla TOPCTR ####
+  cursor = engine.cursor()
+  cursor.execute("""SELECT * FROM base_TopCTR_Final""")
+  data_TopCTR = cursor.fetchall()
+
+  cols=[]
+  for elt in cursor.description:
+    cols.append(elt[0])
+
+  #### Tabla TOPProduct ####
+  cursor = engine.cursor()
+  cursor.execute("""SELECT * FROM base_TopProduct_Final""")
+  data_TopProduct = cursor.fetchall()
+
+  cols=[]
+  for elt in cursor.description:
+    cols.append(elt[0])
+  df_tp = pd.DataFrame(data=data_TopProduct, columns=cols)
   
   df_tp['Model']='TopProduct'
   df_tp=df_tp[['date','Model','advertiser_id','product_id']]
   
+  df_ctr = pd.DataFrame(data=data_TopCTR, columns=cols)
   df_ctr['Model']='TopCTR'
   df_ctr_sel=df_ctr[['date','Model','advertiser_id','product_id']]
   df_final=pd.concat([df_tp,df_ctr_sel])
