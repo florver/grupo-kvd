@@ -36,18 +36,15 @@ def FiltrarDatos():
   url2= s3.Bucket('data-recomendaciones').Object('ads_views.csv').get()
   url3= s3.Bucket('data-recomendaciones').Object('product_views.csv').get()
     
-  #url1='/home/ubuntu/grupo-kvd/advertiser_ids.csv'
   adv_ids = pd.read_csv(url1['Body'], index_col=0)
-  
-  #url2='/home/ubuntu/grupo-kvd/ads_views.csv'
-  ads_views = pd.read_csv(url2['Body'])
-
-  #url3='/home/ubuntu/grupo-kvd/product_views.csv'
-  product_views = pd.read_csv(url3['Body'])
+  ads_views = pd.read_csv(url2['Body'], index_col=0)
+  product_views = pd.read_csv(url3['Body'], index_col=0)
 
   #Listado de views de advertisers activos
   ads_views_today = ads_views[ads_views['date'] == hoy]
   ads_views_activos = pd.merge(ads_views_today, adv_ids, on = 'advertiser_id', how = 'inner')
+  ads_views_activos.to_csv("ads_views_activos.csv")
+  s3.Bucket("data-recomendaciones").upload_file(Filename="ads_views_activos.csv",Key="ads_views_activos.csv")
 
   #Log de vistas de productos en la página del cliente
   product_views_today = product_views[product_views['date'] == hoy]
@@ -63,17 +60,21 @@ def TopProduct ():
   TopProduct_final=TopProduct_final.sort_values(by = ["advertiser_id",'count'], ascending = False)
   TopProduct_final=TopProduct_final.groupby(["advertiser_id"]).head(20)
   TopProduct_final['Model'] = 'TopProduct'
+  TopProduct_final.to_csv("TopProduct_final.csv")
+  s3.Bucket("data-recomendaciones").upload_file(Filename="TopProduct_final.csv",Key="TopProduct_final.csv")
   
-
-#def TopCTR(ads_views_activos):
-#  #ads_views_activos = pd.read_csv(df_ads_view)
-#  ads_views_activos['flag'] = 1
-#  ads_views_activos_pivot = pd.pivot_table(ads_views_activos, index=['advertiser_id','product_id', 'date'], columns = ['type'], values = ['flag'], aggfunc = {'flag' : 'sum'}).reset_index()
-#  ads_views_activos_pivot['rate'] = ads_views_activos_pivot['flag']['click'].fillna(0)/ads_views_activos_pivot['flag']['impression']
-#  TopCTR_final = ads_views_activos_pivot.sort_values(by = 'rate', ascending = False)
-#  TopCTR_final.columns = [ 'advertiser_id', 'product_id', 'date', 'click','impression','rate']
-#  TopCTR_final = TopCTR_final.groupby(['advertiser_id']).head(20)
-#  TopCTR_final['Model'] = 'TopCTR'
+def TopCTR ():
+  ads_views_activos = s3.Bucket('data-recomendaciones').Object('ads_views_activos.csv').get()
+  ads_views_activos_2 = pd.read_csv(ads_views_activos['Body'], index_col=0)
+  ads_views_activos_2['flag'] = 1
+  ads_views_activos_pivot = pd.pivot_table(ads_views_activos_2, index=['advertiser_id','product_id', 'date'], columns = ['type'], values = ['flag'], aggfunc = {'flag' : 'sum'}).reset_index()
+  ads_views_activos_pivot['rate'] = ads_views_activos_pivot['flag']['click'].fillna(0)/ads_views_activos_pivot['flag']['impression']
+  TopCTR_final = ads_views_activos_pivot.sort_values(by = 'rate', ascending = False)
+  TopCTR_final.columns = [ 'advertiser_id', 'product_id', 'date', 'click','impression','rate']
+  TopCTR_final = TopCTR_final.groupby(['advertiser_id']).head(20)
+  TopCTR_final['Model'] = 'TopCTR'
+  TopCTR_final.to_csv("TopCTR_final.csv")
+  s3.Bucket("data-recomendaciones").upload_file(Filename="TopCTR_final.csv",Key="TopCTR_final.csv")
   
 
 #from operator import concat
@@ -85,18 +86,11 @@ def TopProduct ():
 #      port='5432'
 #  )
 
-#def DBWriting(TopCTR_final,TopProduct_final):
-#  #### Tabla TOPCTR ####
-#  cursor = engine.cursor()
-#  cursor.execute("""CREATE TABLE IF NOT EXISTS base_TopCTR_Final (advertiser_id VARCHAR,product_id VARCHAR, fecha_act DATE, click INT, impression INT, rate DECIMAL);""")
-        
-#  for i in range(0 ,len(TopCTR_final)):
-#      values = (TopCTR_final['advertiser_id'][i],TopCTR_final['product_id'][i] , TopCTR_final['date'][i], TopCTR_final['click'][i], TopCTR_final['impression'][i], TopCTR_final['rate'][i])
-#      cursor.execute("INSERT INTO base_TopCTR_Final (advertiser_id,product_id, fecha_act, click, impression, rate) VALUES (%s, %s, %s, %s, %s, %s)",
-#                  values)
+#def DBWriting ():
 
-#  engine.commit()
 #  #### Tabla TOPProduct ####
+#  TopProduct = s3.Bucket('data-recomendaciones').Object('TopProduct_final.csv').get()
+#  TopProduct_final = pd.read_csv(TopProduct['Body'], index_col=0)
 #  cursor = engine.cursor()
 #  cursor.execute("""CREATE TABLE IF NOT EXISTS base_TopProduct_Final (advertiser_id VARCHAR, fecha_act DATE, product_id VARCHAR);""")
 #        
@@ -104,8 +98,20 @@ def TopProduct ():
 #      values = (TopProduct_final['advertiser_id'][i], TopProduct_final['date'][i], TopProduct_final['product_id'][i]  )
 #      cursor.execute("INSERT INTO base_TopProduct_Final (advertiser_id, fecha_act, product_id) VALUES (%s, %s, %s)",
 #                  values)
-
 #  engine.commit()
+
+#  #### Tabla TOPCTR ####
+#  TopCTR = s3.Bucket('data-recomendaciones').Object('TopCTR_final.csv').get()
+#  TopCTR_final = pd.read_csv(TopCTR['Body'], index_col=0)
+#  cursor = engine.cursor()
+#  cursor.execute("""CREATE TABLE IF NOT EXISTS base_TopCTR_Final (advertiser_id VARCHAR,product_id VARCHAR, fecha_act DATE, click INT, impression INT, rate DECIMAL);""")
+        
+#  for i in range(0 ,len(TopCTR_final)):
+#      values = (TopCTR_final['advertiser_id'][i],TopCTR_final['product_id'][i] , TopCTR_final['date'][i], TopCTR_final['click'][i], TopCTR_final['impression'][i], TopCTR_final['rate'][i])
+#      cursor.execute("INSERT INTO base_TopCTR_Final (advertiser_id,product_id, fecha_act, click, impression, rate) VALUES (%s, %s, %s, %s, %s, %s)",
+#                  values)
+#  engine.commit()
+
 
 with DAG(
     dag_id='Pipeline_TP_final',
@@ -123,11 +129,11 @@ with DAG(
     task_id='TopProduct',
     python_callable=TopProduct
     )
-
-#     TopCTR = PythonOperator(
-#     task_id='TopCTR',
-#     python_callable=TopCTR
-#     )
+    
+    TopCTR = PythonOperator(
+    task_id='TopCTR',
+    python_callable=TopCTR
+    )
 
 #     DBWriting = PythonOperator(
 #     task_id='DBWriting',
@@ -137,5 +143,5 @@ with DAG(
 ### dependencias
 
 FiltrarDatos >> TopProduct
-#FiltrarDatos >> TopCTR
+FiltrarDatos >> TopCTR
 #[TopCTR, TopProduct] >> DBWriting
