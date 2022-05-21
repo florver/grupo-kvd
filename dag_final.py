@@ -116,7 +116,7 @@ with DAG(
     dag_id='Pipeline_TP_final',
     schedule_interval='@Daily',
     start_date=datetime.datetime(2022, 4, 1),
-    catchup=False,
+    catchup=True,
 ) as dag:
 
     FiltrarDatos = PythonOperator(
